@@ -113,45 +113,216 @@ aqua install
 bun install
 ```
 
-## 開発計画
+## 使用方法
 
-### Phase 1: データ収集・変換
-- [ ] `./scripts/fetch-data` スクリプトの実装
-  - [ ] HTTPキャッシュ対応ダウンロード機能
-  - [ ] PDFからの冪等なデータ抽出
-  - [ ] アプリ用形式への変換
-- [ ] メーカーコード一覧PDFのダウンロード
-- [ ] PDFからデータ抽出
-- [ ] JSON形式への変換
-- [ ] ファイルサイズの確認
-
-### データ取得の実行方法
+### ローカル開発
 
 ```bash
-# 統合スクリプトで一括実行（推奨）
-./scripts/fetch-data
+# 依存関係のインストール
+bun install
 
-# または手動で段階的に実行
-# 1. PDFダウンロード
-# 2. python scripts/extract_pdf.py
-# 3. bun run scripts/convert_data.ts
+# 開発サーバーの起動
+bun run dev
 ```
 
-### Phase 2: 基本実装
-- [ ] bun + TanStack Routerのセットアップ
-- [ ] Base UIコンポーネントの統合
-- [ ] メーカーコード検索機能の実装
-- [ ] レスポンシブUI実装
+ブラウザで `http://localhost:3000` を開く
 
-### Phase 3: デプロイ
-- [ ] Cloudflare Workers設定
-- [ ] bunでビルド
-- [ ] 本番環境デプロイ
+### テスト
 
-### Phase 4: 拡張（オプション）
-- [ ] 商品コード検索機能
-- [ ] 認証製品一覧機能
-- [ ] 多言語対応（日本語/英語）
+```bash
+# 全テストの実行
+bun test
+
+# 特定のテストファイルのみ
+bun test src/lib/search.test.ts
+
+# watchモード
+bun test --watch
+```
+
+33個のテストが用意されています:
+- キャッシュ管理テスト (5)
+- ダウンロード機能テスト (8)
+- データ変換テスト (11)
+- 検索機能テスト (9)
+
+### データ取得
+
+```bash
+# メーカーコードデータの取得と変換
+./scripts/fetch-data
+
+# または
+bun run fetch-data
+```
+
+詳細は [scripts/README.md](scripts/README.md) を参照してください。
+
+**注意**: 初回実行時は Python と pdfplumber が必要です:
+
+```bash
+pip install pdfplumber
+```
+
+### ビルド
+
+```bash
+# プロダクションビルド
+bun run build
+```
+
+ビルド成果物は `dist/` ディレクトリに生成されます。
+
+### デプロイ
+
+Cloudflare Workersへのデプロイ:
+
+```bash
+# Wranglerでログイン（初回のみ）
+wrangler login
+
+# デプロイ
+wrangler deploy
+```
+
+## プロジェクト構造（詳細）
+
+```
+echonetlite-lookup/
+├── scripts/
+│   ├── fetch-data           # データ取得メインスクリプト
+│   ├── fetch-data.ts        # TypeScript実装
+│   ├── lib/                 # ライブラリモジュール
+│   │   ├── cache.ts         # HTTPキャッシュ管理
+│   │   ├── download.ts      # ダウンロード処理
+│   │   ├── transform.ts     # データ変換・正規化
+│   │   └── tests/           # ユニットテスト
+│   └── python/
+│       └── extract_pdf.py   # PDF抽出スクリプト
+├── src/
+│   ├── routes/              # TanStack Routerルート
+│   │   ├── __root.tsx       # ルートレイアウト
+│   │   ├── index.tsx        # トップページ
+│   │   ├── search.tsx       # 検索ページ
+│   │   └── about.tsx        # Aboutページ
+│   ├── components/          # Reactコンポーネント
+│   │   ├── SearchBar.tsx    # 検索バー
+│   │   └── ManufacturerList.tsx  # 結果一覧
+│   ├── lib/                 # ユーティリティ
+│   │   ├── search.ts        # 検索ロジック
+│   │   └── search.test.ts   # 検索テスト
+│   ├── data/                # 静的データ
+│   │   └── manufacturers.json  # メーカーコード一覧
+│   ├── styles/
+│   │   └── global.css       # グローバルスタイル
+│   ├── router.tsx           # ルーター設定
+│   └── main.tsx             # エントリーポイント
+├── data/
+│   └── raw/                 # 中間データ（Git管理）
+│       └── manufacturers.json
+├── .cache/                  # HTTPキャッシュ（.gitignore）
+├── index.html               # HTMLテンプレート
+├── wrangler.toml            # Cloudflare Workers設定
+└── package.json             # 依存関係とスクリプト
+```
+
+## 実装状況
+
+### ✅ 完了
+
+- [x] **Phase 1: データ収集・変換**
+  - [x] HTTPキャッシュ対応ダウンロード機能
+  - [x] PDFからの冪等なデータ抽出
+  - [x] アプリ用形式への変換
+  - [x] 統合スクリプト `./scripts/fetch-data`
+
+- [x] **Phase 2: 基本実装**
+  - [x] bun + TanStack Routerのセットアップ
+  - [x] メーカーコード検索機能の実装
+  - [x] レスポンシブUI実装
+
+- [x] **Phase 3: デプロイ**
+  - [x] Cloudflare Workers設定
+  - [x] bunでビルド設定
+
+- [x] **テスト**
+  - [x] 全33テストの実装と合格
+
+### 🚧 未実装（オプション）
+
+- [ ] **Phase 4: 拡張機能**
+  - [ ] 商品コード検索機能
+  - [ ] ECHONET Lite認証製品一覧機能
+  - [ ] 多言語対応（日本語/英語）
+  - [ ] PWA化
+  - [ ] データ自動更新（GitHub Actions）
+
+## 技術的特徴
+
+### TDD（テスト駆動開発）
+
+すべての主要機能がテストファーストで実装されています:
+
+1. テストを先に書く
+2. テストが失敗することを確認
+3. 最小限の実装でテストを通す
+4. リファクタリング
+
+### HTTPキャッシュ戦略
+
+効率的なデータ取得のため、以下のHTTPキャッシュ機能を実装:
+
+- `If-Modified-Since` ヘッダーによる条件付きリクエスト
+- `ETag` サポート
+- `304 Not Modified` レスポンスのハンドリング
+- SHA-256ハッシュによるファイル整合性確認
+
+### 冪等なデータ生成
+
+同じ入力から常に同じ出力を生成:
+
+- コードの正規化（大文字、ゼロパディング）
+- ソート順の固定（コード昇順）
+- タイムスタンプの分離管理
+
+これにより、Git差分が意味のある変更のみを示します。
+
+## トラブルシューティング
+
+### bunが見つからない
+
+```bash
+# aquaでインストール
+aqua install
+
+# または直接インストール
+curl -fsSL https://bun.sh/install | bash
+```
+
+### pdfplumberのインストールエラー
+
+```bash
+# システムパッケージが必要な場合
+# macOS:
+brew install poppler
+
+# Ubuntu/Debian:
+sudo apt-get install poppler-utils
+
+# その後
+pip install pdfplumber
+```
+
+### ビルドエラー
+
+```bash
+# node_modulesをクリーンアップ
+rm -rf node_modules bun.lock
+bun install
+
+# キャッシュをクリア
+rm -rf .cache dist
+```
 
 ## 参考リンク
 
