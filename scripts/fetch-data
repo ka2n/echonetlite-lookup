@@ -1,0 +1,3 @@
+#!/bin/bash
+# Wrapper script for fetch-data.ts
+exec bun run "$(dirname "$0")/fetch-data.ts" "$@"

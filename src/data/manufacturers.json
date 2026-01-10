@@ -1,0 +1,21 @@
+{
+  "lastUpdated": "2024-01-01",
+  "source": "https://echonet.jp/spec_g/",
+  "total": 3,
+  "manufacturers": [
+    {
+      "code": "000001",
+      "nameJa": "テスト株式会社"
+    },
+    {
+      "code": "000029",
+      "nameJa": "株式会社日立製作所",
+      "nameEn": "Hitachi, Ltd."
+    },
+    {
+      "code": "00007C",
+      "nameJa": "パナソニック株式会社",
+      "nameEn": "Panasonic Corporation"
+    }
+  ]
+}

@@ -1,0 +1,26 @@
+{
+  "name": "echonetlite-lookup",
+  "module": "index.ts",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "dev": "bun --hot src/main.tsx",
+    "build": "bun build src/main.tsx --outdir=dist --target=browser --minify --splitting --format=esm --entry-naming=[dir]/[name]-[hash].[ext]",
+    "test": "bun test",
+    "fetch-data": "./scripts/fetch-data"
+  },
+  "devDependencies": {
+    "@tanstack/router-devtools": "^1.147.1",
+    "@types/bun": "latest",
+    "@types/react": "^19.2.8",
+    "@types/react-dom": "^19.2.3"
+  },
+  "peerDependencies": {
+    "typescript": "^5"
+  },
+  "dependencies": {
+    "@tanstack/react-router": "^1.147.1",
+    "react": "^19.2.3",
+    "react-dom": "^19.2.3"
+  }
+}

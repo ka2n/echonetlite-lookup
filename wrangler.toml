@@ -1,0 +1,9 @@
+name = "echonetlite-lookup"
+compatibility_date = "2024-01-01"
+main = "dist/index.html"
+
+[site]
+bucket = "./dist"
+
+[build]
+command = "bun run build && cp index.html dist/ && cp -r src/styles dist/"

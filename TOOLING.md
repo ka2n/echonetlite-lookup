@@ -5,6 +5,7 @@
 ### 概要
 
 このプロジェクトでは、グローバルツールの管理に[aqua](https://aquaproj.github.io/)を使用します。
+ツールのグローバルインストールは禁止します。
 
 **メリット**:
 - 宣言的な依存関係管理（`aqua.yaml`）
@@ -15,28 +16,8 @@
 ### セットアップ
 
 ```bash
-# aquaのインストール（初回のみ）
-brew install aquaproj/aqua/aqua
-# または
-curl -sSfL https://raw.githubusercontent.com/aquaproj/aqua-installer/v2.1.1/aqua-installer | bash
-
 # プロジェクトのツールをインストール
 aqua install
-```
-
-### 管理対象ツール
-
-**aqua.yaml**で管理されるツール:
-
-1. **bun**: JavaScriptランタイム・パッケージマネージャー
-2. **wrangler**: Cloudflare Workers CLI
-3. **jq**: JSONプロセッサ（スクリプト用）
-
-```yaml
-packages:
-- name: oven-sh/bun@latest
-- name: cloudflare/workers-sdk@latest  # wrangler
-- name: jqlang/jq@latest
 ```
 
 ### ツールの追加
