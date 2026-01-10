@@ -1,0 +1,19 @@
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/aquaproj/aqua/main/json-schema/aqua-yaml.json
+# aqua - Declarative CLI Version Manager
+# https://aquaproj.github.io/
+# checksum:
+#   enabled: true
+#   require_checksum: true
+#   supported_envs:
+#   - all
+registries:
+- type: standard
+  ref: v4.454.0  # renovate: depName=aquaproj/aqua-registry
+packages:
+- name: oven-sh/bun@latest
+- name: cloudflare/workers-sdk@latest  # wrangler
+- name: jqlang/jq@latest
+# Python tools (for PDF extraction)
+# Note: Python itself should be managed by system or pyenv
+# - name: astral-sh/uv@latest  # Python package manager (optional)
