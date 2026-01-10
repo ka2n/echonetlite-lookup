@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach, afterEach } from 'bun:test';
 import { existsSync, rmSync, mkdirSync } from 'fs';
 import { join } from 'path';
-import type { CacheMetadata, CacheEntry } from '../cache';
+import { loadMetadata, saveMetadata, getCacheEntry, type CacheMetadata } from '../cache';
 
 describe('Cache Manager', () => {
   const testCacheDir = '.cache-test';
@@ -22,7 +22,6 @@ describe('Cache Manager', () => {
 
   describe('loadMetadata', () => {
     it('should return empty object when metadata file does not exist', async () => {
-      const { loadMetadata } = await import('../cache');
       const metadata = await loadMetadata(testMetadataPath);
       expect(metadata).toEqual({});
     });
@@ -39,7 +38,6 @@ describe('Cache Manager', () => {
       };
       await Bun.write(testMetadataPath, JSON.stringify(testData, null, 2));
 
-      const { loadMetadata } = await import('../cache');
       const metadata = await loadMetadata(testMetadataPath);
       expect(metadata).toEqual(testData);
     });
@@ -47,7 +45,6 @@ describe('Cache Manager', () => {
 
   describe('saveMetadata', () => {
     it('should save metadata to file', async () => {
-      const { saveMetadata } = await import('../cache');
       const testData: CacheMetadata = {
         'test.pdf': {
           url: 'https://example.com/test.pdf',
@@ -67,7 +64,6 @@ describe('Cache Manager', () => {
 
   describe('getCacheEntry', () => {
     it('should return null when file is not cached', async () => {
-      const { getCacheEntry } = await import('../cache');
       const entry = await getCacheEntry(testCacheDir, 'test.pdf', testMetadataPath);
       expect(entry).toBeNull();
     });
@@ -86,7 +82,6 @@ describe('Cache Manager', () => {
       };
       await Bun.write(testMetadataPath, JSON.stringify(testMetadata));
 
-      const { getCacheEntry } = await import('../cache');
       const entry = await getCacheEntry(testCacheDir, 'test.pdf', testMetadataPath);
 
       expect(entry).not.toBeNull();

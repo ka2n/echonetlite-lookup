@@ -19,89 +19,40 @@ export interface DownloadResult {
   error?: string;
 }
 
-export async function calculateSHA256(buffer: Buffer): Promise<string> {
+export function calculateSHA256(buffer: Buffer): string {
   const hash = createHash('sha256');
   hash.update(buffer);
   return hash.digest('hex');
 }
 
-export async function downloadFile(options: DownloadOptions): Promise<DownloadResult> {
-  const { url, filename, cacheDir, metadataPath, maxRetries = 3, force = false } = options;
-  const filePath = join(cacheDir, filename);
+function delay(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
 
-  // Check cache unless force download is requested
-  if (!force) {
-    const cacheEntry = await getCacheEntry(cacheDir, filename, metadataPath);
+interface FetchContext {
+  url: string;
+  filePath: string;
+  filename: string;
+  metadataPath: string;
+  maxRetries: number;
+  headers?: Record<string, string>;
+  cacheEntry?: CacheEntry;
+}
 
-    if (cacheEntry) {
-      // Try conditional request
-      const headers: Record<string, string> = {};
+async function fetchWithRetry(ctx: FetchContext): Promise<DownloadResult> {
+  const { url, filePath, filename, metadataPath, maxRetries, headers, cacheEntry } = ctx;
 
-      if (cacheEntry.lastModified) {
-        headers['If-Modified-Since'] = cacheEntry.lastModified;
-      }
-
-      if (cacheEntry.etag) {
-        headers['If-None-Match'] = cacheEntry.etag;
-      }
-
-      for (let attempt = 1; attempt <= maxRetries; attempt++) {
-        try {
-          const response = await fetch(url, { headers });
-
-          if (response.status === 304) {
-            // Not modified, use cache
-            return {
-              status: 'cache-hit',
-              filePath,
-              size: cacheEntry.size,
-            };
-          }
-
-          if (response.status === 200) {
-            // Content changed, download new version
-            return await saveDownloadedFile(response, filePath, url, filename, metadataPath);
-          }
-
-          if (response.status === 404) {
-            return {
-              status: 'error',
-              filePath,
-              error: 'File not found (404)',
-            };
-          }
-
-          // Other errors, retry
-          if (attempt === maxRetries) {
-            return {
-              status: 'error',
-              filePath,
-              error: `HTTP ${response.status} after ${maxRetries} attempts`,
-            };
-          }
-
-          await new Promise((resolve) => setTimeout(resolve, 1000 * attempt));
-        } catch (error) {
-          if (attempt === maxRetries) {
-            // Max retries reached, use cache if available
-            return {
-              status: 'cache-hit',
-              filePath,
-              size: cacheEntry.size,
-              error: `Network error, using cache: ${error}`,
-            };
-          }
-
-          await new Promise((resolve) => setTimeout(resolve, 1000 * attempt));
-        }
-      }
-    }
-  }
-
-  // No cache or force download
   for (let attempt = 1; attempt <= maxRetries; attempt++) {
     try {
-      const response = await fetch(url);
+      const response = await fetch(url, headers ? { headers } : undefined);
+
+      if (response.status === 304 && cacheEntry) {
+        return {
+          status: 'cache-hit',
+          filePath,
+          size: cacheEntry.size,
+        };
+      }
 
       if (response.status === 200) {
         return await saveDownloadedFile(response, filePath, url, filename, metadataPath);
@@ -123,9 +74,17 @@ export async function downloadFile(options: DownloadOptions): Promise<DownloadRe
         };
       }
 
-      await new Promise((resolve) => setTimeout(resolve, 1000 * attempt));
+      await delay(1000 * attempt);
     } catch (error) {
       if (attempt === maxRetries) {
+        if (cacheEntry) {
+          return {
+            status: 'cache-hit',
+            filePath,
+            size: cacheEntry.size,
+            error: `Network error, using cache: ${error}`,
+          };
+        }
         return {
           status: 'error',
           filePath,
@@ -133,7 +92,7 @@ export async function downloadFile(options: DownloadOptions): Promise<DownloadRe
         };
       }
 
-      await new Promise((resolve) => setTimeout(resolve, 1000 * attempt));
+      await delay(1000 * attempt);
     }
   }
 
@@ -142,6 +101,47 @@ export async function downloadFile(options: DownloadOptions): Promise<DownloadRe
     filePath,
     error: 'Unexpected download failure',
   };
+}
+
+export async function downloadFile(options: DownloadOptions): Promise<DownloadResult> {
+  const { url, filename, cacheDir, metadataPath, maxRetries = 3, force = false } = options;
+  const filePath = join(cacheDir, filename);
+
+  // Check cache unless force download is requested
+  if (!force) {
+    const cacheEntry = await getCacheEntry(cacheDir, filename, metadataPath);
+
+    if (cacheEntry) {
+      const headers: Record<string, string> = {};
+
+      if (cacheEntry.lastModified) {
+        headers['If-Modified-Since'] = cacheEntry.lastModified;
+      }
+
+      if (cacheEntry.etag) {
+        headers['If-None-Match'] = cacheEntry.etag;
+      }
+
+      return fetchWithRetry({
+        url,
+        filePath,
+        filename,
+        metadataPath,
+        maxRetries,
+        headers,
+        cacheEntry,
+      });
+    }
+  }
+
+  // No cache or force download
+  return fetchWithRetry({
+    url,
+    filePath,
+    filename,
+    metadataPath,
+    maxRetries,
+  });
 }
 
 async function saveDownloadedFile(

@@ -22,7 +22,7 @@ interface CliOptions {
   help: boolean;
 }
 
-function printHelp() {
+function printHelp(): void {
   console.log(`
 Usage: ./scripts/fetch-data [OPTIONS]
 
@@ -36,10 +36,17 @@ OPTIONS:
 `);
 }
 
-function log(message: string, verbose: boolean = false, isVerbose: boolean = false) {
-  if (!isVerbose || verbose) {
-    console.log(message);
-  }
+function createLogger(verboseMode: boolean) {
+  return {
+    info(message: string): void {
+      console.log(message);
+    },
+    debug(message: string): void {
+      if (verboseMode) {
+        console.log(message);
+      }
+    },
+  };
 }
 
 async function runPythonExtractor(pdfPath: string, outputPath: string, verbose: boolean): Promise<void> {
@@ -89,20 +96,22 @@ async function main() {
     process.exit(0);
   }
 
+  const log = createLogger(options.verbose);
+
   try {
     // Create directories
-    [CACHE_DIR, RAW_DATA_DIR, APP_DATA_DIR].forEach((dir) => {
+    for (const dir of [CACHE_DIR, RAW_DATA_DIR, APP_DATA_DIR]) {
       if (!existsSync(dir)) {
         mkdirSync(dir, { recursive: true });
       }
-    });
+    }
 
-    log('[1/3] Downloading data from ECHONET Consortium...', options.verbose);
+    log.info('[1/3] Downloading data from ECHONET Consortium...');
 
     const pdfPath = join(CACHE_DIR, PDF_FILENAME);
 
     if (!options.dryRun) {
-      log(`  → Checking cache for ${PDF_FILENAME}`, options.verbose, true);
+      log.debug(`  → Checking cache for ${PDF_FILENAME}`);
 
       const downloadResult = await downloadFile({
         url: PDF_URL,
@@ -113,19 +122,19 @@ async function main() {
       });
 
       if (downloadResult.status === 'cache-hit') {
-        log('  ✓ Cache hit', options.verbose);
+        log.info('  ✓ Cache hit');
         if (downloadResult.error) {
-          log(`  ⚠️  ${downloadResult.error}`, options.verbose);
+          log.info(`  ⚠️  ${downloadResult.error}`);
         }
       } else if (downloadResult.status === 'downloaded') {
         const sizeMB = ((downloadResult.size || 0) / 1024 / 1024).toFixed(2);
-        log(`  ✓ Downloaded ${PDF_FILENAME} (${sizeMB} MB)`, options.verbose);
+        log.info(`  ✓ Downloaded ${PDF_FILENAME} (${sizeMB} MB)`);
       } else {
         console.error(`  ✗ Download failed: ${downloadResult.error}`);
         process.exit(1);
       }
     } else {
-      log('  → Skipping download (dry-run mode)', options.verbose);
+      log.info('  → Skipping download (dry-run mode)');
 
       if (!existsSync(pdfPath)) {
         console.error(`  ✗ Error: ${pdfPath} not found. Cannot proceed in dry-run mode.`);
@@ -133,22 +142,22 @@ async function main() {
       }
     }
 
-    log('\n[2/3] Extracting data from PDF...', options.verbose);
+    log.info('\n[2/3] Extracting data from PDF...');
 
     const extractedJsonPath = join(CACHE_DIR, 'extracted.json');
 
-    log('  → Running PDF extractor...', options.verbose, true);
+    log.debug('  → Running PDF extractor...');
     await runPythonExtractor(pdfPath, extractedJsonPath, options.verbose);
 
     const extractedData: ExtractedManufacturer[] = JSON.parse(
       await Bun.file(extractedJsonPath).text()
     );
 
-    log(`  ✓ Extracted ${extractedData.length} manufacturers`, options.verbose);
+    log.info(`  ✓ Extracted ${extractedData.length} manufacturers`);
 
     // Calculate PDF hash
     const pdfBuffer = await Bun.file(pdfPath).arrayBuffer();
-    const pdfHash = await calculateSHA256(Buffer.from(pdfBuffer));
+    const pdfHash = calculateSHA256(Buffer.from(pdfBuffer));
 
     // Transform to raw format
     const rawData = await transformToRawData(extractedData, {
@@ -159,11 +168,11 @@ async function main() {
     const rawDataPath = join(RAW_DATA_DIR, 'manufacturers.json');
     await Bun.write(rawDataPath, JSON.stringify(rawData, null, 2));
 
-    log(`  ✓ Saved to ${rawDataPath}`, options.verbose);
+    log.info(`  ✓ Saved to ${rawDataPath}`);
 
-    log('\n[3/3] Converting to application format...', options.verbose);
+    log.info('\n[3/3] Converting to application format...');
 
-    log(`  → Validating ${rawData.manufacturers.length} records`, options.verbose, true);
+    log.debug(`  → Validating ${rawData.manufacturers.length} records`);
 
     const appData = transformToAppData(rawData);
 
@@ -171,9 +180,9 @@ async function main() {
     await Bun.write(appDataPath, JSON.stringify(appData, null, 2));
 
     const appDataSize = (await Bun.file(appDataPath).size / 1024).toFixed(1);
-    log(`  ✓ Generated ${appDataPath} (${appDataSize} KB)`, options.verbose);
+    log.info(`  ✓ Generated ${appDataPath} (${appDataSize} KB)`);
 
-    log('\n✨ Done! Ready for deployment.', options.verbose);
+    log.info('\n✨ Done! Ready for deployment.');
     process.exit(0);
   } catch (error) {
     console.error(`\n✗ Error: ${error}`);

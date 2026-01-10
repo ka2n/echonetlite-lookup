@@ -1,45 +1,45 @@
 import { describe, it, expect } from 'bun:test';
+import {
+  normalizeCode,
+  normalizeCompanyName,
+  transformToRawData,
+  transformToAppData,
+  validateManufacturerCode,
+} from '../transform';
 
 describe('Data Transformer', () => {
   describe('normalizeCode', () => {
-    it('should remove 0x prefix', async () => {
-      const { normalizeCode } = await import('../transform');
+    it('should remove 0x prefix', () => {
       expect(normalizeCode('0x00007C')).toBe('00007C');
     });
 
-    it('should pad with zeros to 6 digits', async () => {
-      const { normalizeCode } = await import('../transform');
+    it('should pad with zeros to 6 digits', () => {
       expect(normalizeCode('7C')).toBe('00007C');
       expect(normalizeCode('1')).toBe('000001');
     });
 
-    it('should convert to uppercase', async () => {
-      const { normalizeCode } = await import('../transform');
+    it('should convert to uppercase', () => {
       expect(normalizeCode('00007c')).toBe('00007C');
       expect(normalizeCode('0xabcdef')).toBe('ABCDEF');
     });
 
-    it('should handle already normalized codes', async () => {
-      const { normalizeCode } = await import('../transform');
+    it('should handle already normalized codes', () => {
       expect(normalizeCode('00007C')).toBe('00007C');
     });
   });
 
   describe('normalizeCompanyName', () => {
-    it('should trim whitespace', async () => {
-      const { normalizeCompanyName } = await import('../transform');
+    it('should trim whitespace', () => {
       expect(normalizeCompanyName('  パナソニック株式会社  ')).toBe('パナソニック株式会社');
     });
 
-    it('should handle empty strings', async () => {
-      const { normalizeCompanyName } = await import('../transform');
+    it('should handle empty strings', () => {
       expect(normalizeCompanyName('   ')).toBe('');
     });
   });
 
   describe('transformToRawData', () => {
     it('should transform extracted data to raw format', async () => {
-      const { transformToRawData } = await import('../transform');
       const extractedData = [
         { code: '0x00007C', nameJa: 'パナソニック株式会社', nameEn: 'Panasonic Corporation' },
         { code: '29', nameJa: '株式会社日立製作所', nameEn: null },
@@ -57,7 +57,6 @@ describe('Data Transformer', () => {
     });
 
     it('should sort manufacturers by code', async () => {
-      const { transformToRawData } = await import('../transform');
       const extractedData = [
         { code: '00007C', nameJa: 'パナソニック株式会社' },
         { code: '000029', nameJa: '株式会社日立製作所' },
@@ -76,8 +75,7 @@ describe('Data Transformer', () => {
   });
 
   describe('transformToAppData', () => {
-    it('should transform raw data to app format', async () => {
-      const { transformToAppData } = await import('../transform');
+    it('should transform raw data to app format', () => {
       const rawData = {
         metadata: {
           source: 'https://echonet.jp/spec_g/list_code.pdf',
@@ -103,15 +101,13 @@ describe('Data Transformer', () => {
   });
 
   describe('validateManufacturerCode', () => {
-    it('should validate correct 6-digit hex codes', async () => {
-      const { validateManufacturerCode } = await import('../transform');
+    it('should validate correct 6-digit hex codes', () => {
       expect(validateManufacturerCode('00007C')).toBe(true);
       expect(validateManufacturerCode('ABCDEF')).toBe(true);
       expect(validateManufacturerCode('000000')).toBe(true);
     });
 
-    it('should reject invalid codes', async () => {
-      const { validateManufacturerCode } = await import('../transform');
+    it('should reject invalid codes', () => {
       expect(validateManufacturerCode('7C')).toBe(false); // too short
       expect(validateManufacturerCode('GGGGGG')).toBe(false); // invalid hex
       expect(validateManufacturerCode('0x00007C')).toBe(false); // has prefix
