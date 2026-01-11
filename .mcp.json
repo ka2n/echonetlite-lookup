@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "playwright-test": {
+      "command": "bun",
+      "args": [
+        "run",
+        "playwright",
+        "run-test-mcp-server"
+      ]
+    }
+  }
+}
