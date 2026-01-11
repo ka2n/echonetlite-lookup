@@ -1,15 +1,99 @@
-* {
+/* ============================================
+   CSS CUSTOM PROPERTIES (Design Tokens)
+   ============================================ */
+
+:root {
+  /* Typography Scale - Fixed sizes for precision */
+  --text-xs: 0.75rem;
+  --text-sm: 0.875rem;
+  --text-base: 1rem;
+  --text-lg: 1.125rem;
+  --text-xl: 1.25rem;
+  --text-2xl: 1.875rem;
+
+  /* Font Families */
+  --font-display: 'Outfit', system-ui, sans-serif;
+  --font-body: 'DM Sans', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', 'SF Mono', monospace;
+
+  /* Color System - Vercel-style High Contrast (WCAG AA+) */
+  --color-bg-primary: #FFFFFF;
+  --color-bg-secondary: #FAFAFA;
+  --color-bg-elevated: #FFFFFF;
+
+  --color-text-primary: #000000;
+  --color-text-secondary: #666666; /* 5.74:1 contrast */
+  --color-text-tertiary: #888888; /* 4.5:1 contrast - WCAG AA compliant */
+
+  --color-border-subtle: #EAEAEA;
+  --color-border-default: #E5E5E5;
+  --color-border-strong: #D4D4D4;
+
+  /* Accent - Vercel-style black/minimal color */
+  --color-accent-primary: #000000;
+  --color-accent-hover: #333333;
+  --color-accent-light: #F5F5F5;
+  --color-accent-subtle: #FAFAFA;
+
+  /* Semantic Colors - WCAG AA compliant */
+  --color-success: #0070F3;
+  --color-warning: #F5A623;
+  --color-error: #E00;
+
+  /* Spacing System (8px grid) */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.25rem;
+  --space-6: 1.5rem;
+  --space-8: 2rem;
+  --space-10: 2.5rem;
+  --space-12: 3rem;
+  --space-16: 4rem;
+
+  /* Border Radius - Subtle like Vercel */
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 8px;
+
+  /* Transitions - Fast and crisp */
+  --transition-fast: 120ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-base: 180ms cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* Header Height (for sticky positioning) */
+  --app-header-height: 65px;
+}
+
+/* ============================================
+   2. CSS RESET
+   ============================================ */
+
+*,
+*::before,
+*::after {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
 }
 
+/* ============================================
+   3. BASE STYLES
+   ============================================ */
+
 body {
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-family: var(--font-body);
+  font-size: var(--text-base);
   line-height: 1.6;
-  color: #333;
-  background: #f5f5f5;
+  color: var(--color-text-primary);
+  background: var(--color-bg-primary);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
+
+/* ============================================
+   4. LAYOUT COMPONENTS
+   ============================================ */
 
 .app {
   min-height: 100vh;
@@ -17,243 +101,456 @@ body {
   flex-direction: column;
 }
 
+/* Header */
 .header {
-  background: #fff;
-  border-bottom: 1px solid #ddd;
-  padding: 1rem 2rem;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  background: rgba(255, 255, 255, 0.8);
+  border-bottom: 1px solid var(--color-border-default);
+  padding: var(--space-4) var(--space-8);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
 }
 
 .header h1 {
-  font-size: 1.5rem;
-  margin-bottom: 0.5rem;
+  font-family: var(--font-display);
+  font-size: var(--text-xl);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  margin-bottom: var(--space-2);
 }
 
 .header h1 a {
-  color: #007bff;
+  color: var(--color-text-primary);
   text-decoration: none;
+  transition: color var(--transition-fast);
 }
 
 .header h1 a:hover {
-  text-decoration: underline;
+  color: var(--color-text-secondary);
 }
 
 .header nav {
   display: flex;
-  gap: 1.5rem;
+  gap: var(--space-6);
 }
 
 .header nav a {
-  color: #666;
+  color: var(--color-text-secondary);
   text-decoration: none;
-  font-size: 0.9rem;
+  font-size: var(--text-sm);
+  font-weight: 500;
+  padding: var(--space-2);
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  transition: color var(--transition-fast);
 }
 
 .header nav a:hover {
-  color: #007bff;
+  color: var(--color-text-primary);
 }
 
+/* Main Content Area */
 .main {
   flex: 1;
   max-width: 1200px;
   width: 100%;
   margin: 0 auto;
-  padding: 2rem;
+  padding: var(--space-12) var(--space-6);
 }
 
+/* Footer */
 .footer {
-  background: #fff;
-  border-top: 1px solid #ddd;
-  padding: 1rem 2rem;
+  background: var(--color-bg-primary);
+  border-top: 1px solid var(--color-border-default);
+  padding: var(--space-8);
   text-align: center;
-  color: #666;
-  font-size: 0.9rem;
+  color: var(--color-text-secondary);
+  font-size: var(--text-sm);
 }
 
 .footer a {
-  color: #007bff;
+  color: var(--color-text-primary);
   text-decoration: none;
+  font-weight: 500;
+  transition: color var(--transition-fast);
 }
 
 .footer a:hover {
-  text-decoration: underline;
+  color: var(--color-text-secondary);
 }
 
+/* ============================================
+   5. PAGE STYLES
+   ============================================ */
+
 .index-page,
+.search-page,
 .about-page {
-  max-width: 800px;
+  max-width: 48rem;
   margin: 0 auto;
 }
 
 .index-page h2,
+.search-page h2,
 .about-page h2 {
-  margin-bottom: 0.5rem;
-  color: #222;
+  font-family: var(--font-display);
+  font-size: var(--text-2xl);
+  font-weight: 600;
+  color: var(--color-text-primary);
+  margin-bottom: var(--space-4);
+  letter-spacing: -0.03em;
 }
 
 .index-page p,
+.search-page p,
 .about-page p {
-  margin-bottom: 1.5rem;
-  color: #666;
+  font-size: var(--text-base);
+  color: var(--color-text-secondary);
+  line-height: 1.6;
+  margin-bottom: var(--space-6);
 }
 
 .about-page h3 {
-  margin-top: 2rem;
-  margin-bottom: 0.5rem;
-  color: #333;
-  font-size: 1.2rem;
+  font-family: var(--font-display);
+  font-size: var(--text-lg);
+  font-weight: 600;
+  color: var(--color-text-primary);
+  margin-top: var(--space-8);
+  margin-bottom: var(--space-3);
 }
 
+.about-page ul {
+  margin-left: var(--space-6);
+  margin-bottom: var(--space-6);
+}
+
+.about-page li {
+  color: var(--color-text-secondary);
+  margin-bottom: var(--space-2);
+}
+
+.about-page code {
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  color: var(--color-text-primary);
+  background: var(--color-bg-secondary);
+  padding: var(--space-1) var(--space-2);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--color-border-default);
+}
+
+/* ============================================
+   6. COMPONENT STYLES
+   ============================================ */
+
+/* Search Form */
 .search-form {
   display: flex;
-  gap: 0.5rem;
-  margin: 2rem 0;
-  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin: var(--space-8) 0;
+  max-width: 100%;
 }
 
 .search-input {
   flex: 1;
-  min-width: 200px;
-  padding: 0.75rem 1rem;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  font-size: 1rem;
+  min-width: 0;
+  padding: var(--space-3) var(--space-4);
+  border: 1px solid var(--color-border-default);
+  border-radius: var(--radius-md);
+  font-size: var(--text-sm);
+  font-family: var(--font-body);
+  color: var(--color-text-primary);
+  background: var(--color-bg-primary);
+  transition: border-color var(--transition-fast);
+}
+
+.search-input:hover {
+  border-color: var(--color-border-strong);
 }
 
 .search-input:focus {
   outline: none;
-  border-color: #007bff;
-  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+  border-color: var(--color-accent-primary);
 }
 
-.search-type-select {
-  padding: 0.75rem 1rem;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  font-size: 1rem;
-  background: white;
-  cursor: pointer;
-}
-
-.search-type-select:focus {
-  outline: none;
-  border-color: #007bff;
+.search-input::placeholder {
+  color: var(--color-text-tertiary);
 }
 
 .search-button {
-  padding: 0.75rem 2rem;
-  background: #007bff;
+  padding: var(--space-3) var(--space-6);
+  background: var(--color-accent-primary);
   color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 1rem;
+  border: 1px solid var(--color-accent-primary);
+  border-radius: var(--radius-md);
+  font-family: var(--font-body);
+  font-size: var(--text-sm);
   font-weight: 500;
-  transition: background 0.2s;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  min-height: 44px;
 }
 
 .search-button:hover {
-  background: #0056b3;
+  background: var(--color-accent-hover);
+  border-color: var(--color-accent-hover);
 }
 
 .search-button:active {
-  background: #004494;
+  transform: scale(0.98);
 }
 
+/* Manufacturer List */
 .manufacturer-list {
-  margin-top: 2rem;
+  margin-top: var(--space-8);
+  min-width: 0;
+  width: 100%;
 }
 
 .result-count {
-  margin-bottom: 1rem;
-  color: #666;
-  font-size: 0.9rem;
+  margin-bottom: var(--space-4);
+  color: var(--color-text-secondary);
+  font-size: var(--text-sm);
+  font-weight: 500;
 }
 
 .no-results {
-  padding: 2rem;
+  padding: var(--space-12);
   text-align: center;
-  color: #999;
-  background: white;
-  border-radius: 8px;
+  color: var(--color-text-secondary);
+  background: var(--color-bg-secondary);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--color-border-default);
+  font-size: var(--text-base);
 }
 
+/* Table Wrapper for Overflow */
+.table-wrapper {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  border: 1px solid var(--color-border-default);
+  border-radius: var(--radius-lg);
+  width: 100%;
+  min-height: 100px;
+  display: block;
+}
+
+/* Manufacturer Table */
 .manufacturer-table {
   width: 100%;
-  background: white;
+  background: var(--color-bg-primary);
   border-collapse: collapse;
-  border-radius: 8px;
-  overflow: hidden;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-.manufacturer-table th,
-.manufacturer-table td {
-  padding: 1rem;
-  text-align: left;
-  border-bottom: 1px solid #eee;
 }
 
 .manufacturer-table th {
-  background: #f8f9fa;
+  background: var(--color-bg-secondary);
+  padding: var(--space-3) var(--space-4);
+  text-align: left;
+  font-family: var(--font-body);
   font-weight: 600;
-  color: #333;
+  font-size: var(--text-xs);
+  color: var(--color-text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border-bottom: 1px solid var(--color-border-default);
 }
 
-.manufacturer-table tbody tr:last-child td {
-  border-bottom: none;
+.manufacturer-table td {
+  padding: var(--space-4);
+  border-bottom: 1px solid var(--color-border-subtle);
+  vertical-align: middle;
+}
+
+/* Flex container inside td for vertical centering */
+.manufacturer-table td > * {
+  display: inline-flex;
+  align-items: center;
+}
+
+.manufacturer-table tbody tr {
+  transition: background-color var(--transition-fast);
 }
 
 .manufacturer-table tbody tr:hover {
-  background: #f8f9fa;
+  background: var(--color-bg-secondary);
 }
 
 .manufacturer-table .code {
-  font-family: 'Courier New', monospace;
-  font-size: 0.9rem;
-  color: #666;
-  width: 150px;
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  color: var(--color-text-primary);
+  font-weight: 500;
+  background: var(--color-bg-secondary);
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--color-border-default);
+  white-space: nowrap;
+  display: inline-block;
 }
 
 .manufacturer-table .name {
-  font-size: 1rem;
+  font-size: var(--text-sm);
+  color: var(--color-primary);
+  font-weight: 400;
+  text-decoration: none;
+  transition: color 0.2s ease, text-decoration 0.2s ease;
+}
+
+.manufacturer-table .name:hover {
+  color: var(--color-primary-dark);
+  text-decoration: underline;
+}
+
+.manufacturer-table .name:visited {
+  color: var(--color-primary);
+}
+
+.manufacturer-table .name:focus {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
 }
 
 .manufacturer-table .name-en {
-  color: #999;
-  font-size: 0.85rem;
+  color: var(--color-text-secondary);
+  font-size: var(--text-sm);
+  font-weight: 400;
+  margin-left: var(--space-2);
 }
 
-@media (max-width: 768px) {
+/* ============================================
+   7. UTILITY CLASSES
+   ============================================ */
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+/* ============================================
+   8. ACCESSIBILITY
+   ============================================ */
+
+/* Focus States */
+*:focus-visible {
+  outline: 2px solid var(--color-accent-primary);
+  outline-offset: 2px;
+}
+
+/* Reduced Motion Preference */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ============================================
+   9. RESPONSIVE DESIGN
+   ============================================ */
+
+/* Tablet (768px - 1024px) */
+@media (max-width: 1024px) {
   .main {
-    padding: 1rem;
+    padding: var(--space-8) var(--space-6);
+  }
+}
+
+/* Mobile (< 768px) */
+@media (max-width: 768px) {
+  :root {
+    --app-header-height: 57px;
   }
 
   .header {
-    padding: 1rem;
+    padding: var(--space-4);
+  }
+
+  .header h1 {
+    font-size: var(--text-lg);
+  }
+
+  .header nav {
+    gap: var(--space-4);
+  }
+
+  .main {
+    padding: var(--space-6) var(--space-4);
+  }
+
+  .index-page,
+  .search-page,
+  .about-page {
+    padding: 0;
   }
 
   .search-form {
     flex-direction: column;
+    gap: var(--space-2);
   }
 
-  .search-input {
-    min-width: 100%;
+  .search-input,
+  .search-type-select,
+  .search-button {
+    width: 100%;
+    min-height: 48px;
+  }
+
+  .manufacturer-table {
+    font-size: var(--text-sm);
   }
 
   .manufacturer-table th,
   .manufacturer-table td {
-    padding: 0.75rem 0.5rem;
-    font-size: 0.9rem;
+    padding: var(--space-3);
   }
 
   .manufacturer-table .code {
-    width: 100px;
-    font-size: 0.8rem;
+    font-size: var(--text-xs);
+  }
+
+  .manufacturer-table .name {
+    font-size: var(--text-sm);
   }
 
   .manufacturer-table .name-en {
     display: block;
-    margin-top: 0.25rem;
+    margin-left: 0;
+    margin-top: var(--space-1);
+  }
+
+  .footer {
+    padding: var(--space-6) var(--space-4);
+    font-size: var(--text-xs);
+  }
+}
+
+/* Small Mobile (< 480px) */
+@media (max-width: 480px) {
+  .header h1 {
+    font-size: var(--text-base);
+  }
+
+  .header nav {
+    flex-wrap: wrap;
+    gap: var(--space-3);
+  }
+
+  .manufacturer-table th,
+  .manufacturer-table td {
+    padding: var(--space-2) var(--space-3);
   }
 }

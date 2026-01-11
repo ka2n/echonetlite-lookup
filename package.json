@@ -4,16 +4,21 @@
   "type": "module",
   "private": true,
   "scripts": {
-    "dev": "bun --hot src/main.tsx",
+    "dev": "bun run ./scripts/dev-server.ts",
     "build": "bun build src/main.tsx --outdir=dist --target=browser --minify --splitting --format=esm --entry-naming=[dir]/[name]-[hash].[ext]",
+    "build:html": "bun run ./scripts/build-with-html.ts",
     "test": "bun test",
     "fetch-data": "./scripts/fetch-data"
   },
   "devDependencies": {
+    "@playwright/test": "1.56.1",
     "@tanstack/router-devtools": "^1.147.1",
     "@types/bun": "latest",
     "@types/react": "^19.2.8",
-    "@types/react-dom": "^19.2.3"
+    "@types/react-dom": "^19.2.3",
+    "@types/xlsx": "^0.0.36",
+    "playwright": "1.56.1",
+    "wrangler": "^4.58.0"
   },
   "peerDependencies": {
     "typescript": "^5"
@@ -21,6 +26,7 @@
   "dependencies": {
     "@tanstack/react-router": "^1.147.1",
     "react": "^19.2.3",
-    "react-dom": "^19.2.3"
+    "react-dom": "^19.2.3",
+    "xlsx": "^0.18.5"
   }
 }

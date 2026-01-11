@@ -1,9 +1,12 @@
-name = "echonetlite-lookup"
+name = "echonetlite"
+main = "src/_worker.ts"
 compatibility_date = "2024-01-01"
-main = "dist/index.html"
 
-[site]
-bucket = "./dist"
+# Assets configuration
+[assets]
+directory = "dist"
 
-[build]
-command = "bun run build && cp index.html dist/ && cp -r src/styles dist/"
+# Custom domain routing
+[[routes]]
+pattern = "echonet-lite.ka2n.dev"
+custom_domain = true

@@ -158,12 +158,6 @@ bun run fetch-data
 
 詳細は [scripts/README.md](scripts/README.md) を参照してください。
 
-**注意**: 初回実行時は Python と pdfplumber が必要です:
-
-```bash
-pip install pdfplumber
-```
-
 ### ビルド
 
 ```bash

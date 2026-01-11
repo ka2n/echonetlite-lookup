@@ -41,6 +41,8 @@ yarn-error.log*
 # Testing
 coverage/
 .nyc_output/
+playwright-report/
+test-results/
 
 # Temporary files
 tmp/
@@ -56,3 +58,4 @@ external-docs/raw_data.json
 
 # Raw data directory (Git管理対象だが、バイナリファイルは除外)
 data/raw/*.pdf
+dev-dist/
