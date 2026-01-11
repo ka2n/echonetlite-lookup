@@ -5,7 +5,7 @@
   "private": true,
   "scripts": {
     "dev": "bun run ./scripts/dev-server.ts",
-    "build": "bun build src/main.tsx --outdir=dist --target=browser --minify --splitting --format=esm --entry-naming=[dir]/[name]-[hash].[ext]",
+    "build": "bun build ./index.html --outdir=dist --target=browser --minify --splitting --format=esm",
     "build:html": "bun run ./scripts/build-with-html.ts",
     "test": "bun test",
     "fetch-data": "./scripts/fetch-data"
